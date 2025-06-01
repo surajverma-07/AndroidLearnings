@@ -1,27 +1,15 @@
-import React from 'react';
-import {
- 
-  SafeAreaView,
-  Text,
-  View,
-} from 'react-native';
-
-
-function App(): React.JSX.Element {
+import { View, Text, SafeAreaView, ScrollView } from 'react-native'
+import React from 'react'
+import FlatCards from './components/FlatCards'
+const App = () => {
   return (
     <SafeAreaView>
-      <View><Text>JSR</Text></View>
-    <View>
-       <Text>Jay Shree Ram</Text>
-       <Text>Jay Shree Ram</Text>
-       <Text>Jay Shree Ram</Text>
-       <Text>Jay Shree Ram</Text>
-       <Text>Jay Shree Ram</Text>
-       <Text>Jay Shree Ram</Text>
-    </View>
+      <ScrollView>
+      <Text>App</Text>
+      </ScrollView>
+      <FlatCards />
     </SafeAreaView>
-  );
+  )
 }
 
-
-export default App;
+export default App
