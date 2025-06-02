@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
      fontWeight: 'bold',
      paddingHorizontal: 10,
      paddingVertical: 10,
+     color:'white'
     },
    container:{
     flexDirection: 'row',
@@ -51,10 +52,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
-    elevation: 5, // Android shadow
-    shadowColor: '#000', // iOS shadow
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
+    elevation: 5, 
+    shadowColor: 'red',
+    shadowOffset: { width: 1, height: 2 },
+    shadowOpacity: 0.7,
     shadowRadius: 3.84,
    },
 })
