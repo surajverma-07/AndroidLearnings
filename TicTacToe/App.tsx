@@ -41,33 +41,33 @@ const App = () => {
         gameState[a] === gameState[b] &&
         gameState[a] === gameState[c]
       ) {
-        setGameWinner(`${gameState[a]} is a winner  🥳`);
-        if (gameWinner) {
-          return Snackbar.show({
+          const winner = gameState[a];
+          gameState[a] = 'win';
+          gameState[b] = 'win';
+          gameState[c] = 'win';
+        setGameWinner(`${winner} is a winner  🥳`);
+        Snackbar.show({
             text: gameWinner,
             backgroundColor: 'green',
             textColor: 'black',
           });
-        }
         return true;
-      } else {
-        if (gameState.every(cell => cell != 'empty')) {
-          setGameWinner("No one is winner, it's a draw! ��");
-          return true;
-        }
-      }
+      } 
+      else if (gameState.every(cell => cell !== 'empty')) {
+    setGameWinner("No one is winner, it's a draw! 😅");
+    Snackbar.show({
+      text: "No one is winner, it's a draw! 😅",
+      backgroundColor: 'orange',
+      textColor: 'black',
+    });
+    return true;
+  }
     }
     return false;
   };
 
   const onChangeItem = (itemNumber: number) => {
-    if (gameWinner) {
-      return Snackbar.show({
-        text: gameWinner,
-        backgroundColor: 'green',
-        textColor: 'black',
-      });
-    }
+       if(gameWinner)reloadGame();
     if (gameState[itemNumber] === 'empty') {
       gameState[itemNumber] = isCross ? 'cross' : 'circle';
       setIsCross(!isCross);

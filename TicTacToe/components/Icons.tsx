@@ -22,6 +22,13 @@ const Icons = ({name}:IconProps) => {
        color='#38CC&&'
        />
        break;
+    case 'win':
+       return <Icon 
+       name='trophy'
+       size={38}
+       color='#38CC77'
+       />
+       break;    
      default: 
          return <Icon 
        name='pencil'
