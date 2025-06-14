@@ -6,6 +6,7 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
+  Animated,
 } from 'react-native';
 import React, {useState} from 'react';
 import Icons from './components/Icons';
@@ -14,15 +15,25 @@ import Snackbar from 'react-native-snackbar';
 const App = () => {
   const [isCross, setIsCross] = useState<boolean>(false);
   const [gameWinner, setGameWinner] = useState<string>('');
-  const [gameState, setGameState] = useState(new Array(9).fill('empty', 0, 9));
+  const [gameState, setGameState] = useState(
+    new Array(9).fill(null).map(() => ({
+      type: 'empty',
+      animation: new Animated.Value(1),
+    })),
+  );
 
   const reloadGame = () => {
-    setGameState(new Array(9).fill('empty', 0, 9));
+    setGameState(
+      new Array(9).fill(null).map(() => ({
+        type: 'empty',
+        animation: new Animated.Value(1),
+      })),
+    );
     setIsCross(false);
     setGameWinner('');
   };
 
-  const checkIsWinner = () => {
+  const checkIsWinner = (): boolean => {
     const winningCombinations = [
       [0, 1, 2],
       [3, 4, 5],
@@ -36,41 +47,70 @@ const App = () => {
 
     for (let i = 0; i < winningCombinations.length; i++) {
       const [a, b, c] = winningCombinations[i];
+
       if (
-        gameState[a] != 'empty' &&
-        gameState[a] === gameState[b] &&
-        gameState[a] === gameState[c]
+        gameState[a].type !== 'empty' &&
+        gameState[a].type === gameState[b].type &&
+        gameState[a].type === gameState[c].type
       ) {
-          const winner = gameState[a];
-          gameState[a] = 'win';
-          gameState[b] = 'win';
-          gameState[c] = 'win';
-        setGameWinner(`${winner} is a winner  🥳`);
+        const winner = gameState[a].type;
+
+        const updatedGameState = [...gameState];
+        updatedGameState[a].type = 'win';
+        updatedGameState[b].type = 'win';
+        updatedGameState[c].type = 'win';
+
+        setGameState(updatedGameState);
+        setGameWinner(`${winner} is a winner 🥳`);
+
+        // Bounce animation for each winning cell
+        [a, b, c].forEach(index => {
+          Animated.sequence([
+            Animated.timing(updatedGameState[index].animation, {
+              toValue: 1.5,
+              duration: 500,
+              useNativeDriver: true,
+            }),
+            Animated.timing(updatedGameState[index].animation, {
+              toValue: 1,
+              duration: 500,
+              useNativeDriver: true,
+            }),
+          ]).start();
+        });
+
         Snackbar.show({
-            text: gameWinner,
-            backgroundColor: 'green',
-            textColor: 'black',
-          });
+          text: `${winner} is a winner 🥳`,
+          backgroundColor: 'green',
+          textColor: 'black',
+        });
+
         return true;
-      } 
-      else if (gameState.every(cell => cell !== 'empty')) {
-    setGameWinner("No one is winner, it's a draw! 😅");
-    Snackbar.show({
-      text: "No one is winner, it's a draw! 😅",
-      backgroundColor: 'orange',
-      textColor: 'black',
-    });
-    return true;
-  }
+      }
     }
+
+    // If all cells are filled and no winner
+    const isDraw = gameState.every(cell => cell.type !== 'empty');
+    if (isDraw) {
+      setGameWinner("No one is winner, it's a draw! 😅");
+      Snackbar.show({
+        text: "No one is winner, it's a draw! 😅",
+        backgroundColor: 'orange',
+        textColor: 'black',
+      });
+      return true;
+    }
+
     return false;
   };
-
   const onChangeItem = (itemNumber: number) => {
-       if(gameWinner)reloadGame();
-    if (gameState[itemNumber] === 'empty') {
-      gameState[itemNumber] = isCross ? 'cross' : 'circle';
+    if (gameWinner) reloadGame();
+    if (gameState[itemNumber].type === 'empty') {
+      const newGameState = [...gameState];
+      newGameState[itemNumber].type = isCross ? 'cross' : 'circle';
+      setGameState(newGameState);
       setIsCross(!isCross);
+      checkIsWinner();
     } else {
       return Snackbar.show({
         text: 'Position already marked! Try again',
@@ -78,7 +118,6 @@ const App = () => {
         textColor: '#000000',
       });
     }
-    checkIsWinner();
   };
   return (
     <SafeAreaView>
@@ -108,7 +147,7 @@ const App = () => {
             key={index}
             style={styles.card}
             onPress={() => onChangeItem(index)}>
-            <Icons name={item} />
+            <Icons name={item.type} animation={item.animation} />
           </Pressable>
         )}
       />
